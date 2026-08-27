@@ -3,7 +3,6 @@ import { withSidebar } from 'vitepress-sidebar'
 import type { VitePressSidebarOptions } from 'vitepress-sidebar'
 
 
-const GITHUB_REPO = "w"
 const GITHUB_USERNAME = 'Sabi99ux'
 
 const baseConfig = defineConfig({
@@ -11,6 +10,7 @@ const baseConfig = defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   appearance: 'dark',
+  base: '/my-personal-portofolio-website/',
 
   locales: {
     id: {
@@ -35,10 +35,6 @@ const baseConfig = defineConfig({
         langMenuLabel: 'Ganti bahasa',
         skipToContentLabel: 'Langsung ke konten',
         docFooter: { prev: 'Halaman sebelumnya', next: 'Halaman berikutnya' },
-        editLink: {
-          pattern: `https://github.com/${GITHUB_USERNAME}/${GITHUB_REPO}/edit/main/:path`,
-          text: 'Sunting halaman ini di GitHub'
-        }
       }
     },
     en: {
@@ -55,10 +51,6 @@ const baseConfig = defineConfig({
         ],
         lightModeSwitchTitle: 'Switch to light theme',
         darkModeSwitchTitle: 'Switch to dark theme',
-        editLink: {
-          pattern: `https://github.com/${GITHUB_USERNAME}/${GITHUB_REPO}/edit/main/:path`,
-          text: 'Edit this page on GitHub'
-        }
       }
     }
   },

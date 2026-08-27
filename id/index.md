@@ -38,7 +38,6 @@ techStack:
   - TensorFlow
   - Vue
   - Git
-  - Github
   - Jupyter
   - VitePress
  
