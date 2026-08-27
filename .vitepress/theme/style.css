@@ -1,0 +1,142 @@
+
+
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-sans/400-italic.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+:root {
+  --p-font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  --p-font-body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --p-font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --p-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --p-dur-1: 420ms;
+  --p-dur-2: 720ms;
+  --p-radius: 3px;
+
+  --p-bg: #efece5;
+  --p-bg-raised: #f8f6f1;
+  --p-ink: #1b1a20;
+  --p-ink-dim: #5c584f;
+  --p-brass: #9c7238;
+  --p-brass-soft: rgba(156, 114, 56, 0.12);
+  --p-slate: #566270;
+  --p-line: rgba(27, 26, 32, 0.12);
+  --p-line-strong: rgba(27, 26, 32, 0.28);
+}
+
+.dark {
+  --p-bg: #15141a;
+  --p-bg-raised: #1c1b22;
+  --p-ink: #eeeae2;
+  --p-ink-dim: #9b968d;
+  --p-brass: #c79a56;
+  --p-brass-soft: rgba(199, 154, 86, 0.14);
+  --p-slate: #8b97a6;
+  --p-line: rgba(238, 234, 226, 0.12);
+  --p-line-strong: rgba(238, 234, 226, 0.28);
+}
+
+:root {
+  --vp-c-bg: var(--p-bg);
+  --vp-c-bg-alt: var(--p-bg-raised);
+  --vp-c-bg-elv: var(--p-bg-raised);
+  --vp-c-bg-soft: var(--p-bg-raised);
+
+  --vp-c-text-1: var(--p-ink);
+  --vp-c-text-2: var(--p-ink-dim);
+  --vp-c-text-3: var(--p-ink-dim);
+
+  --vp-c-divider: var(--p-line);
+  --vp-c-gutter: var(--p-line);
+  --vp-c-border: var(--p-line-strong);
+
+  --vp-c-brand-1: var(--p-brass);
+  --vp-c-brand-2: var(--p-brass);
+  --vp-c-brand-3: var(--p-brass);
+  --vp-c-brand-soft: var(--p-brass-soft);
+
+  --vp-button-brand-bg: var(--p-brass);
+  --vp-button-brand-hover-bg: var(--p-brass);
+  --vp-button-brand-border: var(--p-brass);
+  --vp-button-brand-text: var(--p-bg);
+
+  --vp-font-family-base: var(--p-font-body);
+  --vp-font-family-mono: var(--p-font-mono);
+
+  --vp-code-block-bg: var(--p-bg-raised);
+  --vp-nav-height: 64px;
+  --vp-layout-max-width: 1240px;
+}
+
+html:not(.dark) .vp-doc a,
+html.dark .vp-doc a {
+  color: var(--p-brass);
+}
+
+::selection {
+  background: var(--p-brass-soft);
+  color: var(--p-ink);
+}
+
+body {
+  font-feature-settings: 'ss01' 1;
+}
+
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.VPHero .name,
+.VPHero .text {
+  font-family: var(--p-font-display);
+  letter-spacing: -0.01em;
+}
+
+.VPNavBarTitle .title,
+.VPSidebarItem .text,
+.VPNavBarMenuLink {
+  font-family: var(--p-font-body);
+}
+
+.vp-doc code,
+.vp-doc div[class*='language-'] {
+  font-family: var(--p-font-mono);
+  border-radius: var(--p-radius);
+}
+
+.VPButton,
+.vp-doc div[class*='language-'],
+.custom-block,
+input.DocSearch-Input {
+  border-radius: var(--p-radius) !important;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+a:focus-visible,
+button:focus-visible,
+.landing a:focus-visible,
+.landing button:focus-visible {
+  outline: 1.5px solid var(--p-brass);
+  outline-offset: 3px;
+}
+
+@media (min-width: 960px) {
+  :root {
+    --vp-nav-height: 72px;
+  }
+}
