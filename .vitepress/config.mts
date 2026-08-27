@@ -10,7 +10,7 @@ const baseConfig = defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   appearance: 'dark',
-  base: '/my-personal-portofolio-website/',
+  base: 'my-personal-portofolio-website',
 
   locales: {
     id: {
