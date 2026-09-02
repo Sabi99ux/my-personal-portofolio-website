@@ -10,11 +10,14 @@ import GithubIcon from './GithubIcon.vue'
 import ThemeIcon from './ThemeIcon.vue'
 import LedgerList from './LedgerList.vue'
 import TechMarquee from './TechMarquee.vue'
+import VPNavBarTranslations from 'vitepress/dist/client/theme-default/components/VPNavBarTranslations.vue'
 
 import { data as idProjects } from '../../../id/project/project.data'
 import { data as enProjects } from '../../../en/project/project.data'
+import { data as zhProjects } from '../../../zh/project/project.data'
 import { data as idPosts } from '../../../id/blog/blog.data'
 import { data as enPosts } from '../../../en/blog/blog.data'
+import { data as zhPosts } from '../../../zh/blog/blog.data'
 
 const UI_TEXT = {
   id: {
@@ -33,7 +36,7 @@ const UI_TEXT = {
     contactBody: 'Punya proyek atau ide yang ingin didiskusikan? Kirim email.',
     lastBuild: 'Pembaruan terakhir',
     builtWith: 'Dibangun dengan VitePress.',
-    langLabel: 'Bahasa'
+    langLabel: 'Ganti bahasa'
   },
   en: {
     navWork: 'Work',
@@ -51,18 +54,48 @@ const UI_TEXT = {
     contactBody: 'Have a project or an idea worth discussing? Send an email.',
     lastBuild: 'Last build',
     builtWith: 'Built with VitePress.',
-    langLabel: 'Language'
+    langLabel: 'Change language'
+  },
+  zh: {
+    navWork: '项目',
+    navWriting: '文章',
+    navAbout: '关于',
+    aboutEyebrow: '关于我',
+    aboutSeeAll: '了解更多',
+    workEyebrow: '我的项目',
+    workIntro: '一些能够展现我的思考方式与实践过程的项目。',
+    workSeeAll: '查看所有项目',
+    writingEyebrow: '文章',
+    writingIntro: '记录一些我最近正在学习和探索的东西。',
+    writingSeeAll: '查看所有文章',
+    contactEyebrow: '联系我',
+    contactBody: '有项目或想法想要交流？欢迎给我发邮件。',
+    lastBuild: '最后构建',
+    builtWith: '使用 VitePress 构建。',
+    langLabel: '切换语言'
   }
 } as const
 
 const { lang, page, theme, frontmatter, isDark } = useData()
 const isId = computed(() => lang.value.startsWith('id'))
+const locale = computed<'id' | 'en' | 'zh'>(() => {
+  if (isId.value) return 'id'
+  return lang.value.startsWith('zh') ? 'zh' : 'en'
+})
 
-const projects = computed(() => (isId.value ? idProjects : enProjects).slice(0, 3))
-const posts = computed(() => (isId.value ? idPosts : enPosts).slice(0, 3))
+const projects = computed(() => {
+  const items = locale.value === 'id' ? idProjects : locale.value === 'zh' ? zhProjects : enProjects
+  return items.slice(0, 3)
+})
+const posts = computed(() => {
+  const items = locale.value === 'id' ? idPosts : locale.value === 'zh' ? zhPosts : enPosts
+  return items.slice(0, 3)
+})
 
 const githubUrl = computed(
-  () => theme.value.socialLinks?.find((s) => s.icon === 'github')?.link ?? '#'
+  () =>
+    theme.value.socialLinks?.find((socialLink: { icon?: string }) => socialLink.icon === 'github')
+      ?.link ?? '#'
 )
 
 function toggleTheme() {
@@ -86,7 +119,7 @@ const copy = computed(() => {
   }
 
   return {
-    ...UI_TEXT[isId.value ? 'id' : 'en'],
+    ...(locale.value === 'id' ? UI_TEXT.id : locale.value === 'zh' ? UI_TEXT.zh : UI_TEXT.en),
     siteTitle: fm.SiteTitle ?? '',
     name: fm.Name ?? '',
     copyrightName: fm.CopyrightName ?? '',
@@ -96,14 +129,13 @@ const copy = computed(() => {
     specs: fm.specs ?? [],
     techStack: fm.techStack ?? [],
     contactEmail: fm.email ?? '',
-    otherLocaleLink: withBase(isId.value ? '/en/' : '/id/'),
-    htmlLang: isId.value ? 'id' : 'en'
+    htmlLang: locale.value
   }
 })
 
 const lastBuildDisplay = computed(() => {
   if (!page.value.lastUpdated) return null
-  return new Intl.DateTimeFormat(isId.value ? 'id-ID' : 'en-US', {
+  return new Intl.DateTimeFormat(locale.value === 'id' ? 'id-ID' : locale.value === 'zh' ? 'zh-CN' : 'en-US', {
     dateStyle: 'medium'
   }).format(new Date(page.value.lastUpdated))
 })
@@ -250,20 +282,16 @@ onBeforeUnmount(() => {
 <template>
   <div ref="rootEl" class="landing" :lang="copy.htmlLang">
     <nav ref="navEl" class="l-nav">
-      <a class="l-nav__brand" :href="withBase(isId ? '/id/' : '/en/')">{{ copy.siteTitle }}</a>
+      <a class="l-nav__brand" :href="withBase(`/${locale}/`)">{{ copy.siteTitle }}</a>
 
       <div class="l-nav__links">
-        <a :href="withBase(isId ? '/id/project/' : '/en/project/')">{{ copy.navWork }}</a>
-        <a :href="withBase(isId ? '/id/blog/' : '/en/blog/')">{{ copy.navWriting }}</a>
-        <a :href="withBase(isId ? '/id/about' : '/en/about')">{{ copy.navAbout }}</a>
+        <a :href="withBase(`/${locale}/project/`)">{{ copy.navWork }}</a>
+        <a :href="withBase(`/${locale}/blog/`)">{{ copy.navWriting }}</a>
+        <a :href="withBase(`/${locale}/about`)">{{ copy.navAbout }}</a>
       </div>
 
       <div class="l-nav__meta">
-        <a class="l-nav__lang" :href="copy.otherLocaleLink" :aria-label="copy.langLabel">
-          <span :class="{ 'is-active': isId }">ID</span>
-          <span class="l-nav__lang-sep">/</span>
-          <span :class="{ 'is-active': !isId }">EN</span>
-        </a>
+        <VPNavBarTranslations class="l-nav__translations" />
         <button
           type="button"
           class="l-nav__theme"
@@ -327,7 +355,7 @@ onBeforeUnmount(() => {
         <a
           class="l-section__seeall"
           data-reveal
-          :href="withBase(isId ? '/id/about' : '/en/about')"
+          :href="withBase(`/${locale}/about`)"
           >{{ copy.aboutSeeAll }} &rarr;</a
         >
       </section>
@@ -339,9 +367,9 @@ onBeforeUnmount(() => {
         </div>
         <p class="l-section__intro" data-reveal>{{ copy.workIntro }}</p>
 
-        <LedgerList :items="projects" :lang="isId ? 'id' : 'en'" />
+        <LedgerList :items="projects" :lang="locale" />
 
-        <a class="l-section__seeall" data-reveal :href="withBase(isId ? '/id/project/' : '/en/project/')"
+        <a class="l-section__seeall" data-reveal :href="withBase(`/${locale}/project/`)"
           >{{ copy.workSeeAll }} &rarr;</a
         >
       </section>
@@ -353,9 +381,9 @@ onBeforeUnmount(() => {
         </div>
         <p class="l-section__intro" data-reveal>{{ copy.writingIntro }}</p>
 
-        <LedgerList :items="posts" :lang="isId ? 'id' : 'en'" />
+        <LedgerList :items="posts" :lang="locale" />
 
-        <a class="l-section__seeall" data-reveal :href="withBase(isId ? '/id/blog/' : '/en/blog/')"
+        <a class="l-section__seeall" data-reveal :href="withBase(`/${locale}/blog/`)"
           >{{ copy.writingSeeAll }} &rarr;</a
         >
       </section>
@@ -460,20 +488,13 @@ onBeforeUnmount(() => {
   gap: 1.25rem;
 }
 
-.l-nav__lang {
-  font-family: var(--p-font-mono);
-  font-size: 0.78rem;
-  color: var(--p-ink-dim);
-  text-decoration: none;
-  display: inline-flex;
-  gap: 0.35em;
-  letter-spacing: 0.03em;
+.l-nav__translations {
+  display: flex;
+  align-items: center;
 }
-.l-nav__lang span.is-active {
-  color: var(--p-ink);
-}
-.l-nav__lang-sep {
-  opacity: 0.4;
+.l-nav__translations :deep(.VPMenu) {
+  width: max-content;
+  min-width: 0;
 }
 
 .l-nav__theme {

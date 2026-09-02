@@ -18,14 +18,14 @@ interface LedgerItem {
 const props = withDefaults(
   defineProps<{
     items: LedgerItem[]
-    lang?: 'id' | 'en'
+    lang?: 'id' | 'en' | 'zh'
   }>(),
   { lang: 'en' }
 )
 
 const emptyText =
-  props.lang === 'id' ? 'Belum ada yang ditulis di sini.' : 'Nothing written here yet.'
-const externalLabel = props.lang === 'id' ? 'Tautan' : 'Link'
+  props.lang === 'id' ? 'Belum ada yang ditulis di sini.' : props.lang === 'zh' ? '这里还没有内容。' : 'Nothing written here yet.'
+const externalLabel = props.lang === 'id' ? 'Tautan' : props.lang === 'zh' ? '链接' : 'Link'
 
 
 const rootEl = ref<HTMLElement>()

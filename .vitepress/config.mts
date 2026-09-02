@@ -52,6 +52,22 @@ const baseConfig = defineConfig({
         lightModeSwitchTitle: 'Switch to light theme',
         darkModeSwitchTitle: 'Switch to dark theme',
       }
+    },
+    zh: {
+      label: '中文',
+      lang: 'zh',
+      link: '/zh/',
+      title: 'AMALSABI - Portofolio',
+      description: '个人作品集 — 工作和写作。',
+      themeConfig: {
+        nav: [
+          { text: 'Home', link: '/zh/' },
+          { text: 'Work', link: '/zh/project/' },
+          { text: 'Writing', link: '/zh/blog/' }
+        ],
+        lightModeSwitchTitle: 'Switch to light theme',
+        darkModeSwitchTitle: 'Switch to dark theme',
+      }
     }
   },
 
@@ -106,6 +122,28 @@ const sidebarOptions: VitePressSidebarOptions[] = [
     documentRootPath: 'en',
     scanStartPath: 'blog',
     resolvePath: '/en/blog/',
+    useTitleFromFrontmatter: true,
+    useFolderTitleFromIndexFile: true,
+    includeRootIndexFile: true,
+    collapsed: false,
+    sortMenusByFrontmatterDate: true,
+    sortMenusOrderByDescending: true
+  },
+  {
+    documentRootPath: 'zh',
+    scanStartPath: 'project',
+    resolvePath: '/zh/project/',
+    useTitleFromFrontmatter: true,
+    useFolderTitleFromIndexFile: true,
+    includeRootIndexFile: true,
+    collapsed: false,
+    sortMenusByFrontmatterDate: true,
+    sortMenusOrderByDescending: true
+  },
+  {
+    documentRootPath: 'zh',
+    scanStartPath: 'blog',
+    resolvePath: '/zh/blog/',
     useTitleFromFrontmatter: true,
     useFolderTitleFromIndexFile: true,
     includeRootIndexFile: true,
