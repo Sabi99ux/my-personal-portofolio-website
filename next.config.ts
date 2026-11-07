@@ -3,11 +3,8 @@ import path from 'path';
 
 const config: NextConfig = {
   reactStrictMode: true,
+  output: 'export',
   outputFileTracingRoot: path.join(__dirname),
-  // "/" has no page of its own: send visitors to the default locale (keep in sync with defaultLocale).
-  async redirects() {
-    return [{ source: '/', destination: '/en', permanent: false }];
-  },
 };
 
 export default config;
