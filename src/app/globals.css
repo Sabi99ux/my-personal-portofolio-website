@@ -1,0 +1,208 @@
+@import 'tailwindcss';
+@import 'lenis/dist/lenis.css';
+
+/* ───────────── theme tokens ─────────────
+   Dark = the blue hour before sunrise. Light = morning fog. Every colour on the page, including the
+   six mountain layers, is a variable, so a theme switch re-colours the whole scene without re-rendering. */
+:root {
+  color-scheme: dark;
+  --bg: #10132a;
+  --fg: #e9e6f2;
+  --muted: #9a9bb8;
+  --line: rgb(233 230 242 / 0.16);
+  --surface: #181b3b;
+  --accent: #ffb067;
+  --accent-fg: #1a1208;
+  --spot: rgb(255 176 103 / 0.14);
+  --lantern: rgb(255 190 130 / 0.16);
+
+  --sky-0: #0c1330;
+  --sky-1: #3a3872;
+  --sky-2: #e48f68;
+  --dusk-0: #05070d;
+  --dusk-1: #141a33;
+  --sun-core: rgb(255 190 130 / 0.55);
+  --sun-halo: rgb(255 140 90 / 0.16);
+  --title: #f6efe2;
+  --rim: #ffd2a8;
+  --mist: 214 224 250;
+  --m0-a: #9a7aa6; --m0-b: #6a5a8e;
+  --m1-a: #7a6a9c; --m1-b: #51487c;
+  --m2-a: #5a5388; --m2-b: #37336a;
+  --m3-a: #3b3a72; --m3-b: #232356;
+  --m4-a: #25264f; --m4-b: #161838;
+  --m5-a: var(--bg); --m5-b: var(--bg); /* the foreground IS the page, so the hero melts into the next section */
+}
+
+/* ───────────── base ───────────── */
+html {
+  background: var(--bg);
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.display {
+  font-weight: 560;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+.hero-title {
+  color: var(--title);
+  font-size: clamp(3.25rem, 11.5vw, 10.5rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+}
+/* wdth is animated on the wrapper by GSAP and inherited by the (language-keyed) h1 */
+[data-title] {
+  font-variation-settings: 'wdth' 100;
+}
+:lang(zh-CN) .display,
+:lang(zh-CN) .hero-title {
+  letter-spacing: 0.02em;
+  line-height: 1.12;
+}
+:lang(zh-CN) .hero-title {
+  font-size: clamp(2.75rem, 9vw, 8.5rem);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.9rem 1.7rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 520;
+}
+
+/* ───────────── animation gating ─────────────
+   "js" is set before first paint. Animated text/scene starts hidden ONLY when JS will take over,
+   so there is never a flash of the finished state, and no-JS visitors still see everything. */
+.js [data-kinetic]:not([data-ready]) {
+  visibility: hidden;
+}
+.js [data-hero]:not([data-ready]) :is([data-sky], [data-sun], [data-layer], [data-mist], [data-cta], [data-gauge]) {
+  visibility: hidden;
+}
+/* SplitText mask wrappers (<unitClass>-mask) clip overflow: give ascenders/descenders room without shifting layout */
+.k-unit-mask {
+  padding-block: 0.1em;
+  margin-block: -0.1em;
+}
+
+/* ───────────── cursor ───────────── */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+.cursor-rig {
+  mix-blend-mode: difference; /* white dot inverts whatever is underneath */
+}
+.cursor-shape {
+  background: #fff;
+  transition: background-color 0.3s;
+}
+.cursor-label {
+  color: var(--accent-fg);
+}
+.cursor-rig[data-kind='view'],
+.cursor-rig[data-kind='drag'] {
+  mix-blend-mode: normal;
+}
+.cursor-rig[data-kind='view'] .cursor-shape,
+.cursor-rig[data-kind='drag'] .cursor-shape {
+  background: var(--accent);
+}
+@media (hover: none), (pointer: coarse) {
+  .cursor-rig {
+    display: none;
+  }
+}
+
+/* ───────────── bento ───────────── */
+.tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(360px circle at var(--sx, 50%) var(--sy, 50%), var(--spot), transparent 70%);
+}
+.tile:hover::after {
+  opacity: 1;
+}
+.marquee {
+  animation: marquee 32s linear infinite;
+}
+.marquee-reverse {
+  animation: marquee-reverse 26s linear infinite;
+}
+.marquee:hover,
+.marquee-reverse:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0.95;
+    transform: scale(1.2);
+  }
+}
+
+/* ───────────── showcase without the pin (reduced motion / no JS) → native snap-scrolling row ───────────── */
+.work:not(.is-pinned) [data-track] {
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.work:not(.is-pinned) [data-panel] {
+  scroll-snap-align: center;
+}
+.work:not(.is-pinned) [data-trail] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee,
+  .marquee-reverse {
+    animation: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
