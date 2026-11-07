@@ -3,6 +3,8 @@ import { defaultLocale, localeMeta, locales } from '@/i18n/dictionary';
 import { absoluteUrl, languageAlternates, localePath } from '@/lib/seo';
 import { getAvailableProjectLocales, getProjectSlugs } from '@/lib/project-posts';
 
+export const dynamic = 'force-static';
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const homePages = locales.map((locale) => ({
     url: absoluteUrl(localePath(locale)),
