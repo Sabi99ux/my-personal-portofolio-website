@@ -16,6 +16,9 @@ const DEFAULT_STATS: RepoStats = {
   watchers: 0,
 };
 
+const CACHE_TTL = 60 * 1000;
+const REFRESH_INTERVAL = 5 * 60 * 1000;
+
 export function GithubRepoTile({ className = '' }: { className?: string }) {
   const { t } = useI18n();
   const [stats, setStats] = useState<RepoStats>(DEFAULT_STATS);
@@ -26,56 +29,66 @@ export function GithubRepoTile({ className = '' }: { className?: string }) {
   useEffect(() => {
     let isMounted = true;
     const cacheKey = `gh_stats_${repoFullName}`;
+    let hasFreshCache = false;
 
-    // 1. Try reading from sessionStorage to protect free unauthenticated API rate limit (60 req/hr)
+    // Show cached numbers immediately, then revalidate when they are more than a minute old.
     try {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
-        // Valid for 10 minutes
-        if (Date.now() - parsed.timestamp < 1000 * 60 * 10) {
+        if (
+          typeof parsed.timestamp === 'number' &&
+          parsed.data &&
+          typeof parsed.data.stars === 'number' &&
+          typeof parsed.data.forks === 'number' &&
+          typeof parsed.data.watchers === 'number'
+        ) {
           setStats(parsed.data);
-          return;
+          hasFreshCache = Date.now() - parsed.timestamp < CACHE_TTL;
         }
       }
     } catch {
       // sessionStorage unavailable / blocked
     }
 
-    // 2. Fetch from free public GitHub REST API
     async function fetchStats() {
       try {
         const res = await fetch(`https://api.github.com/repos/${repoFullName}`, {
           headers: { Accept: 'application/vnd.github.v3+json' },
+          cache: 'no-store',
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          const nextStats: RepoStats = {
-            stars: data.stargazers_count ?? 0,
-            forks: data.forks_count ?? 0,
-            watchers: data.subscribers_count ?? data.watchers_count ?? 0,
-          };
+        if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
 
-          if (isMounted) {
-            setStats(nextStats);
-            try {
-              sessionStorage.setItem(
-                cacheKey,
-                JSON.stringify({ timestamp: Date.now(), data: nextStats })
-              );
-            } catch {}
+        const data = await res.json();
+        const nextStats: RepoStats = {
+          stars: data.stargazers_count ?? 0,
+          forks: data.forks_count ?? 0,
+          watchers: data.subscribers_count ?? data.watchers_count ?? 0,
+        };
+
+        if (isMounted) {
+          setStats(nextStats);
+          try {
+            sessionStorage.setItem(
+              cacheKey,
+              JSON.stringify({ timestamp: Date.now(), data: nextStats })
+            );
+          } catch {
+            // The live stats still work when sessionStorage is unavailable.
           }
         }
-      } catch {
-        // Fallback to default stats if network error or repo is still private/unpublished
+      } catch (error) {
+        console.error('Unable to refresh GitHub repository stats:', error);
       }
     }
 
-    fetchStats();
+    if (!hasFreshCache) void fetchStats();
+    const intervalId = window.setInterval(() => void fetchStats(), REFRESH_INTERVAL);
 
     return () => {
       isMounted = false;
+      window.clearInterval(intervalId);
     };
   }, [repoFullName]);
 
